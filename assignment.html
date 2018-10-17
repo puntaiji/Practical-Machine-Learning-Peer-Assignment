@@ -131,18 +131,10 @@ $(document).ready(function () {
 <p>Read the data of wearable devices from <a href="http://groupware.les.inf.puc-rio.br/har" class="uri">http://groupware.les.inf.puc-rio.br/har</a> which have the the movement sensors. Cut the variables which not relate to movement such as user_name, timestamp, Then remove statistic column of movement such as variance, average,max, min ,and kurtosis and skewness values which have missing data.</p>
 <div id="get-and-clean-data" class="section level3">
 <h3>Get and clean data</h3>
-<pre class="r"><code>library(caret)</code></pre>
-<pre><code>## Loading required package: lattice</code></pre>
-<pre><code>## Loading required package: ggplot2</code></pre>
-<pre class="r"><code>library(randomForest)</code></pre>
-<pre><code>## randomForest 4.6-14</code></pre>
-<pre><code>## Type rfNews() to see new features/changes/bug fixes.</code></pre>
-<pre><code>## 
-## Attaching package: 'randomForest'</code></pre>
-<pre><code>## The following object is masked from 'package:ggplot2':
-## 
-##     margin</code></pre>
-<pre class="r"><code>pml_data &lt;- read.csv(&quot;pml-training.csv&quot;)
+<pre class="r"><code>library(caret)
+library(randomForest)
+
+pml_data &lt;- read.csv(&quot;pml-training.csv&quot;)
 test_problem &lt;- read.csv(&quot;pml-testing.csv&quot;)
 pml_data &lt;- pml_data[,8:ncol(pml_data)]
 test_problem &lt;- test_problem[,8:ncol(test_problem)]
@@ -218,7 +210,7 @@ confusionMatrix(RFpred,testing$classe)</code></pre>
 ## Detection Rate         0.2845   0.1922   0.1730   0.1611   0.1830
 ## Detection Prevalence   0.2850   0.1932   0.1762   0.1621   0.1835
 ## Balanced Accuracy      0.9996   0.9959   0.9941   0.9911   0.9974</code></pre>
-<p>With the test set, accuracy is <strong>99.37%</strong> that great to use to predict problem.</p>
+<p>With the test set, accuracy is <strong>0.9937128</strong> that great to use to predict problem.</p>
 </div>
 </div>
 <div id="predict-the-problem-set" class="section level2">

@@ -1,0 +1,84 @@
+---
+title: "Course Project Prediction Assignment : Machine Learning Class"
+author: "Chonlatit"
+date: "16 October 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE,message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## The Data of wearable devices
+Read the data of wearable devices from http://groupware.les.inf.puc-rio.br/har which have the the movement sensors. Cut the variables which not relate to movement such as user_name, timestamp,
+Then remove statistic column of movement such as variance, average,max, min ,and kurtosis and skewness values which have missing data. 
+
+### Get and clean data
+
+```{r getdata, message =FALSE}
+library(caret)
+library(randomForest)
+
+pml_data <- read.csv("pml-training.csv")
+test_problem <- read.csv("pml-testing.csv")
+pml_data <- pml_data[,8:ncol(pml_data)]
+test_problem <- test_problem[,8:ncol(test_problem)]
+pml_data <- pml_data[, !grepl("(max|min|amplitude|var|avg|stddev|kurtosis|skewness)", names(pml_data))]
+test_problem <- test_problem[, !grepl("(max|min|amplitude|var|avg|stddev|kurtosis|skewness)", names(test_problem))]
+
+
+```
+
+###Seperate training and testing from Data
+
+
+```{r set_train}
+set.seed(2561)
+train <- createDataPartition(y = pml_data$classe,p=0.7 ,list=FALSE)
+training <- pml_data[train,]
+testing <- pml_data[-train,]
+
+```
+
+## Predict the class 
+
+Refer to http://groupware.les.inf.puc-rio.br/har, There are 6 Classes to predict (Class A-E) in test set.
+
+Classification Tree suits with this situation So I use Random Forest.
+
+**use randomForest function in randomForest library is faster than train in caret**
+
+### Random Forest 
+
+```{r model, cache=TRUE,message=FALSE}
+
+RFFit <- randomForest(x = training[,-(ncol(training))],y = training$classe)
+print(RFFit)
+
+```
+
+From Random Forest, 500 trees with each variables at each split 7 with the Out-of-Bag estimate of error rate : 0.5% which show in Confustion Matrix that 61 errors of 19622 observations (66/19622 = 0.0031). So our Accuracy with training data is 99.5%. This accuracy of training data is so high and seem to be overfitting model that is cons of random forest, but it still can use to predict test set.
+
+### Predict with Test Set
+
+```{r predict_data,message=FALSE}
+
+RFpred <- predict(RFFit,testing)
+confusionMatrix(RFpred,testing$classe)
+
+```
+With the test set, accuracy is **`r confusionMatrix(RFpred,testing$classe)$overall[[1]]`** that great to use to predict problem.
+
+## Predict the Problem Set
+
+
+```{r predict_problem,message=FALSE}
+problemPred <- predict(RFFit,test_problem)
+
+```
+
+result is 
+
+```{r}
+as.data.frame(problemPred)
+```
